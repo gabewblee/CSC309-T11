@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
             .then(async (response) => {
                 if (response.ok) {
                     const data = await response.json();
-                    setUser(data);
+                    setUser(data.user);
                 } else {
                     setUser(null);
                 }
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         navigate("/");
     };
-
+    
     /**
      * Login a user with their credentials.
      *
@@ -84,12 +84,18 @@ export const AuthProvider = ({ children }) => {
                 }
             });
 
-            if (userResponse.ok) {
-                const userData = await userResponse.json();
-                setUser(userData);
-                navigate("/profile");
-                return;
+            if (!userResponse.ok) {
+                const errorData = await userResponse.json();
+                return errorData.message;
             }
+            const userData = await userResponse.json();
+            setUser(userData.user);
+            navigate("/profile");
+            return;
+
+        } else {
+            const errorData = await response.json();
+            return errorData.message;
         }
     };
 
@@ -109,12 +115,11 @@ export const AuthProvider = ({ children }) => {
             body: JSON.stringify(userData)
         });
 
-        if (response.ok) {
-            navigate("/success");
-        } else {
+        if (!response.ok) {
             const errorData = await response.json();
             return errorData.message;
         }
+        navigate("/success");
     };
 
     return (
