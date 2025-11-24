@@ -1,7 +1,13 @@
-// import express from "express";
-// import routes from "./routes.js";
+import express from "express";
+import cors from "cors";
+import routes from "./routes.js";
 
-// const router = express.Router();
-
-// router.use("", routes);
-// export default router;
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+const app = express();
+app.use(cors({
+    origin: FRONTEND_URL,
+    credentials: true
+}));
+app.use(express.json());
+app.use("", routes);
+export default app;
